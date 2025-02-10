@@ -1,5 +1,11 @@
 from rest_framework import serializers
-from .models import Student,Category,Cycle,Course,CoursesPerCycle,Teacher,TeachersPerCourse,Enrollment,Class,Attendance,Test ,TestScore
+from .models import (
+    Student,Category,Cycle,
+    Course,CoursesPerCycle,
+    Teacher,TeachersPerCourse,
+    Enrollment,Class,
+    Attendance,Test ,TestScore
+)
 
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
