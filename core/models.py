@@ -1,153 +1,53 @@
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 
-class Category(models.Model):
-    CategoryId = models.CharField(max_length=10, primary_key=True)
-    CategoryDescr = models.CharField(max_length=100)
+class CustomUser(AbstractUser):
+    email = models.EmailField(unique=True)
+    bio = models.TextField(blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+
+    groups = models.ManyToManyField(Group, related_name="custom_users", blank=True)
+    user_permissions = models.ManyToManyField(Permission, related_name="custom_users", blank=True)
 
     def __str__(self):
-        return self.CategoryDescr
+        return self.username
 
+
+class Category(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
 
 class Course(models.Model):
-    CourseId = models.CharField(max_length=10, primary_key=True)
-    CourseDescription = models.CharField(max_length=100)
-    Abstract = models.TextField()
-    Bibliography = models.TextField()
-    Category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='courses')
+    instructor = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='courses')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.CourseDescription
+        return self.title
 
-
-class Cycle(models.Model):
-    CycleId = models.CharField(max_length=10, primary_key=True)
-    CycleDescription = models.CharField(max_length=100)
-    CycleStartDate = models.DateField()
-    CycleEndDate = models.DateField()
-    VacationStartDate = models.DateField(null=True, blank=True)
-    VacationEndDate = models.DateField(null=True, blank=True)
+class Lesson(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='lessons')
+    title = models.CharField(max_length=255)
+    video_url = models.URLField()
+    description = models.TextField(blank=True, null=True)
+    order = models.PositiveIntegerField()
 
     def __str__(self):
-        return self.CycleDescription
-
-
-class CoursesPerCycle(models.Model):
-    Course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    Cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
-    CourseStartDate = models.DateField()
-    CourseEndDate = models.DateField()
-
-    class Meta:
-        unique_together = ('Course', 'Cycle')
-
-    def __str__(self):
-        return f"{self.Course} - {self.Cycle}"
-
-
-class Teacher(models.Model):
-    TeacherId = models.CharField(max_length=10, primary_key=True)
-    TeacherName = models.CharField(max_length=100)
-    Email = models.EmailField(null=True, blank=True)
-    PhoneNo = models.CharField(max_length=100, null=True, blank=True)
-
-    def __str__(self):
-        return self.TeacherName
-
-
-class TeachersPerCourse(models.Model):
-    Course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    Cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
-    Teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ('Course', 'Cycle', 'Teacher')
-
-    def __str__(self):
-        return f"{self.Teacher} for {self.Course} in {self.Cycle}"
-
-
-class Student(models.Model):
-    StudentId = models.CharField(max_length=10, primary_key=True)
-    StudentName = models.CharField(max_length=100)
-    Email = models.EmailField(null=True, blank=True)
-    BirthDate = models.DateField()
-    PhoneNo = models.CharField(max_length=30, null=True, blank=True)
-
-    def __str__(self):
-        return self.StudentName
-
+        return f"{self.order}. {self.title}"
 
 class Enrollment(models.Model):
-    Course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    Cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
-    Student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    EnrollmentDate = models.DateField()
-    Cancelled = models.BooleanField(default=False)
-    CancellationReason = models.CharField(max_length=100, null=True, blank=True)
-
+    student = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='enrollments')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments')
+    enrolled_at = models.DateTimeField(auto_now_add=True)
+    
     class Meta:
-        unique_together = ('Course', 'Cycle', 'Student')
+        unique_together = ('student', 'course')
 
     def __str__(self):
-        return f"{self.Student} enrolled in {self.Course}"
-
-
-class Class(models.Model):
-    Course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    Cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
-    ClassNo = models.IntegerField()
-    Teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    ClassTitle = models.CharField(max_length=100)
-    ClassDate = models.DateField()
-    StartTime = models.TimeField()
-    EndTime = models.TimeField()
-
-    class Meta:
-        unique_together = ('Course', 'Cycle', 'ClassNo')
-
-    def __str__(self):
-        return f"Class {self.ClassNo} for {self.Course} in {self.Cycle}"
-
-
-class Attendance(models.Model):
-    Course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    Cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
-    Class = models.ForeignKey(Class, on_delete=models.CASCADE)
-    Student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    TimeArrive = models.TimeField(null=True, blank=True)
-    TimeLeave = models.TimeField(null=True, blank=True)
-
-    class Meta:
-        unique_together = ('Course', 'Cycle', 'Class', 'Student')
-
-    def __str__(self):
-        return f"{self.Student} attendance in {self.Class}"
-
-
-class Test(models.Model):
-    Course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    Cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
-    TestNo = models.IntegerField()
-    TestDate = models.DateField()
-    TestTime = models.TimeField()
-    Agenda = models.TextField()
-
-    class Meta:
-        unique_together = ('Course', 'Cycle', 'TestNo')
-
-    def __str__(self):
-        return f"Test {self.TestNo} for {self.Course} in {self.Cycle}"
-
-
-class TestScore(models.Model):
-    Course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    Cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
-    Test = models.ForeignKey(Test, on_delete=models.CASCADE)
-    Student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    Score = models.DecimalField(max_digits=5, decimal_places=2)
-
-    class Meta:
-        unique_together = ('Course', 'Cycle', 'Test', 'Student')
-
-    def __str__(self):
-        return f"Score for {self.Student} in {self.Test} for {self.Course}"
+        return f"{self.student.username} - {self.course.title}"
