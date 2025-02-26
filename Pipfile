@@ -11,6 +11,7 @@ crispy-bootstrap5 = "*"
 django-ckeditor = "*"
 pillow = "*"
 gunicorn = "*"
+whitenoise = "*"
 [dev-packages]
 
 [requires]
