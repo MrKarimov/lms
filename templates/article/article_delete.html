@@ -1,0 +1,18 @@
+    
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}delete{% endblock %}
+  {% block content%}
+
+    <h1>Siz bu postni chindan ham o'chirishni hoxlaysizmi?</h1>
+    <p><strong>Title:</strong> {{ object.title }}</p>
+    <p><strong>Summary:</strong> {{ object.summary }}</p>
+    <p><strong>Author:</strong> {{ object.author }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="button" class="btn btn-danger">Ha, o'chirilsin</button>
+        <a href="{% url 'article_list' %}" type="button" class="btn btn-secondary">yo'q, o'chirilmasin</a>
+    </form>
+  {% endblock content%}
+  

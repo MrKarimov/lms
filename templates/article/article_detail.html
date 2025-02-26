@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Left Column: Article Content -->
+        <div class="col-md-8">
+            <div class="card mb-5">
+                <div class="card-body">
+                    <h1 class="card-title">{{ article.title }}</h1>
+                    <hr>
+                    <div class="text-muted mb-3">
+                        <span>Muallif: {{ article.author | title }} | {{ article.date | date:"d-m-Y" }} | {{ article.date | date:"g:i a" }}</span>
+                    </div>
+                    <h3 class="card-subtitle mb-3">{{ article.summary }}</h3>
+                    {% if article.photo %}
+                        <img src="{{ article.photo.url }}" class="img-fluid mb-3" alt="{{ article.title }}">
+                    {% else %}
+                        <img src="{% static 'default_image.jpg' %}" class="img-fluid mb-3" alt="Default Image">
+                    {% endif %}
+                    <p class="card-text">{{ article.body | safe }}</p>
+                </div>
+                <div class="card-footer text-muted">
+                    {% if user.is_staff %}
+                    <a href="{% url 'article_edit' article.pk %}" class="btn btn-sm btn-outline-primary">Tahrirlash</a>
+                    <a href="{% url 'article_delete' article.pk %}" class="btn btn-sm btn-outline-danger">O'chirish</a>
+                    {% endif %}
+                    <a href="{% url 'article_list' %}" class="btn btn-sm btn-outline-secondary">Barcha postlar</a>
+                </div>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="comments-section mt-5">
+                <h4>Kommentlar</h4>
+                <div class="card mb-5" style="max-height: 400px; overflow-y: auto;">
+                    <div class="card-body">
+                        {% for comment in article.comments.all %}
+                            <div class="comment mb-3">
+                                <strong>{{ comment.author.username }}</strong>
+                                <span class="text-muted">{{ comment.created_at|date:"d-m-Y g:i a" }}</span>
+                                <p>{{ comment.content }}</p>
+                                <hr>
+                            </div>
+                        {% empty %}
+                        <p>Hozircha kommentlar mavjud emas.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Comment Form -->
+                {% if user.is_authenticated %}
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Yangi Kommentar Yozish</h5>
+                        <form method="post" action="{% url 'add_comment' article.pk %}">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <button type="submit" class="btn btn-primary mt-2">Kommentarni yuborish</button>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Column: List of Posts -->
+        <div class="col-md-4">
+            <div class="card mb-4" style="height: 600px; overflow-y: auto;">
+                <div class="card-header fixed-top bg-white" style="position: sticky; top: 0; z-index: 1020;">
+                    <h4>Boshqa Postlar</h4>
+                </div>
+                <div class="list-group list-group-flush mt-3">
+                    {% for post in recent_posts %}
+                    <div class="card mb-3">
+                        {% if post.photo %}
+                        <img src="{{ post.photo.url }}" class="card-img-top" alt="{{ post.title }}">
+                        {% else %}
+                        <img src="{% static 'default_image.jpg' %}" class="card-img-top" alt="Default Image">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{% url 'article_detail' post.pk %}" class="text-decoration-none text-dark">{{ post.title }}</a>
+                            </h5>
+                            <p class="card-text">
+                                <small class="text-muted">Muallif: {{ post.author | title }} | {{ post.date|date:"d-m-Y" }} | {{ post.date|date:"g:i a" }}</small>
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create{% endblock %}
+{% block content %}
+    <h1>Yangi post yaratish</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.media }}
+        {{ form |crispy }}
+        <button type="submit">post yaratish</button>
+    </form>
+
+    <a href="{% url 'article_list' %}">bosh sahifaga qaytish</a>
+
+{% endblock content %}

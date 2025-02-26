@@ -1,0 +1,30 @@
+body {
+    padding-top: 56px; /* Navbar uchun yuqoridan bo'sh joy */
+  }
+  .navbar-brand img {
+    margin-right: -5px; /* Logo va matn orasida bo'sh joy */
+  }
+  .navbar {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Navbar uchun soyali effekt */
+  }
+  .main-content {
+    padding: 20px; /* Asosiy tarkib uchun ichki bo'sh joy */
+  }
+  .dropdown-menu {
+    
+    min-width: 150px; /* Menyu kengligini sozlash */
+  }
+  .dropdown-item {
+   
+    cursor: pointer; /* Tugma ustida kursor ko'rsatilishi */
+  }
+
+.css-8traci {
+    background-color: white;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+    width: 100%;
+           }
+
+        

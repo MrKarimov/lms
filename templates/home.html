@@ -1,0 +1,27 @@
+<!-- templates/home.html -->
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Bosh Sahifa{% endblock %}
+
+{% block content %}
+  {% if user.is_authenticated %}
+  <div class="container mt-5 d-flex justify-content-center">
+    <div class="card p-5" style="width: 50%;">
+    <h4>Assalomu alaykum {{ user.first_name }} {{user.last_name}} mening shaxsiy blog sahifamga xush kelibsiz!</h4>
+    <p>Siz ushbu Web-Sahifada dasturlash soxasiga doir turli xil qiziqarli postlarni o'qishingiz mumkin.</p>
+     <a class=" btn btn-outline-dark" href="{% url 'article_list' %}" type="button">Postlarni ko'rish</a>
+    </div>
+  </div>
+  {% else %}
+    <div class="container mt-5 d-flex justify-content-center" >
+      <div class="card p-5" style="width: 50%;">
+        <h2 class="text-center">Saytga kirmagansiz!</h2>
+        <p class="card-footer text-muted">Saytdagi postlarni o'qish uchun saytga kirishingiz lozim!</p>
+        <div>
+    <a href="{% url 'login' %}" type="button"  class=" btn btn-outline-dark">Kirish</a> 
+    <a href="{% url 'signup' %}" type="button"  class=" btn btn-outline-dark">Ro'yxatdan o'tish</a>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock content%}

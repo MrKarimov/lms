@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Tahrirlash{% endblock %}
+{% block content %}
+    <h1 class = "">Postni tahrirlash</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form |crispy }}
+        <div class="card-footer text-muted">
+        <button type="submit" class="btn btn-sm btn-outline-success">Tahrirlash</button>
+        <a href="{% url 'article_list' %}" type="button" class="btn btn-sm btn-outline-primary">Bosh sahifaga qaytish</a>
+       </div>
+    </form>
+{% endblock content %}

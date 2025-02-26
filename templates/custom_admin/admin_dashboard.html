@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Django Administration</h1>
+        <div>
+            <span>Welcome, {{ request.user.username }}.</span>
+            <a href="{% url 'admin:logout' %}" class="btn btn-outline-secondary btn-sm ml-2">Log out</a>
+        </div>
+    </div>
+
+    <!-- Site Administration Links -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Accounts</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <a href="{% url 'admin:accounts_customuser_changelist' %}" class="list-group-item list-group-item-action">
+                        Users
+                    </a>
+                    <a href="{% url 'admin:accounts_customuser_add' %}" class="list-group-item list-group-item-action">
+                        Add User
+                    </a>
+                    <a href="{% url 'admin:accounts_customuser_changelist' %}" class="list-group-item list-group-item-action">
+                        Change User
+                    </a>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Articles</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <a href="{% url 'admin:articles_article_changelist' %}" class="list-group-item list-group-item-action">
+                        Articles
+                    </a>
+                    <a href="{% url 'admin:articles_article_add' %}" class="list-group-item list-group-item-action">
+                        Add Article
+                    </a>
+                    <a href="{% url 'admin:articles_article_changelist' %}" class="list-group-item list-group-item-action">
+                        Change Article
+                    </a>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Authentication and Authorization</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <a href="{% url 'admin:auth_group_changelist' %}" class="list-group-item list-group-item-action">
+                        Groups
+                    </a>
+                    <a href="{% url 'admin:auth_group_add' %}" class="list-group-item list-group-item-action">
+                        Add Group
+                    </a>
+                    <a href="{% url 'admin:auth_group_changelist' %}" class="list-group-item list-group-item-action">
+                        Change Group
+                    </a>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Actions -->
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Recent Actions</h5>
+        </div>
+        <ul class="list-group list-group-flush">
+            {% for action in recent_actions %}
+            <li class="list-group-item">
+                <span class="text-muted">{{ action.action|capfirst }}:</span> {{ action.object_repr }}
+            </li>
+            {% empty %}
+            <li class="list-group-item text-center text-muted">No recent actions</li>
+            {% endfor %}
+        </ul>
+    </div>
+    </div>
+</div>
+{% endblock %}
